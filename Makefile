@@ -4,22 +4,23 @@ INCLUDE=$(ROOT)/include
 BUILD=build
 BIN=bin
 
-CFLAGS+= -I$(INCLUDE)
-LFLAGS+= -lcurses
+CFLAGS+= -I$(INCLUDE) -pedantic -Wall -Wextra -DDEBUG
+LFLAGS+= -lcurses -lreadline
 
 SOURCES:=$(wildcard $(SRC)/*.c)
 BUILDFILES:=$(patsubst $(SRC)/%.c,$(BUILD)/%.o,$(SOURCES))
 
-all: $(BIN)/risk | Makefile
+all: $(BIN)/risk #| Makefile
 
-# For out of source build
-Makefile:
-	echo "include $(ROOT)/Makefile" > Makefile
+## WARN: this out of source build style is dangerous when using `make -B`
+# # For out of source build
+# Makefile:
+# 	echo "include $(ROOT)/Makefile" > Makefile
 
 $(BIN)/risk: $(BUILDFILES) | $(BIN)
 	$(CC) $(LFLAGS) $^ -o $@
 
-$(BUILD)/%.o: $(SRC)/%.c | $(BUILD)
+$(BUILD)/%.o: $(SRC)/%.c $(INCLUDE)/util.h | $(BUILD)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD)/%.o: $(INCLUDE)/%.h

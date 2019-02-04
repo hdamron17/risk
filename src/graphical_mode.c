@@ -16,7 +16,7 @@ bool window_check() {
   return false;
 }
 
-int graphical_main() {
+int graphical_main(CountriesMap* map) {
   initscr();
   if (!window_check()) {
     return -1;

@@ -1,13 +1,16 @@
 /* Copyright 2019 - Hunter Damron */
 
 #include "game.h"
+#include "game_initialization.h"
 #include "graphical_mode.h"
 #include "terminal_mode.h"
 
-int main(int argc, char** argv) {
+int main() {
   bool graphical = false;
+  CountriesMap* map = load_map("assets/traditional");
   if (graphical)
-    graphical_main();
+    graphical_main(map);
   else
-    terminal_main();
+    terminal_main(map);
+  rmCountriesMap(map);
 }
