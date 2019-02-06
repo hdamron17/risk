@@ -3,19 +3,21 @@ SRC=$(ROOT)/src
 INCLUDE=$(ROOT)/include
 BUILD=build
 BIN=bin
+TEST=$(ROOT)/test
+BINTEST=$(BIN)/test
+TARFILE=risk.tar.gz
 
-CFLAGS+= -I$(INCLUDE) -pedantic -Wall -Wextra -DDEBUG
+DEBUGFLAGS=-DDEBUG -g
+CFLAGS+= -I$(INCLUDE) -pedantic -Wall -Wextra -DCOLOR $(DEBUGFLAGS)
 LFLAGS+= -lcurses -lreadline
 
 SOURCES:=$(wildcard $(SRC)/*.c)
 BUILDFILES:=$(patsubst $(SRC)/%.c,$(BUILD)/%.o,$(SOURCES))
+TESTS:=$(wildcard $(TEST)/test_*.c)
+BINTESTS:=$(patsubst $(TEST)/test_%.c,$(BINTEST)/test_%,$(TESTS))
 
-all: $(BIN)/risk #| Makefile
-
-## WARN: this out of source build style is dangerous when using `make -B`
-# # For out of source build
-# Makefile:
-# 	echo "include $(ROOT)/Makefile" > Makefile
+.PHONY: all test clean distclean tar
+all: $(BIN)/risk
 
 $(BIN)/risk: $(BUILDFILES) | $(BIN)
 	$(CC) $(LFLAGS) $^ -o $@
@@ -25,8 +27,22 @@ $(BUILD)/%.o: $(SRC)/%.c $(INCLUDE)/util.h | $(BUILD)
 
 $(BUILD)/%.o: $(INCLUDE)/%.h
 
-$(BUILD) $(BIN):
+test: $(BINTESTS)
+	$(foreach test,$(BINTESTS),./$(test) &&) true
+
+$(BINTEST)/test_%: $(TEST)/test_%.c | $(BINTEST)
+	$(CC) $(CFLAGS) -I$(SRC) -I$(TEST) $< -o $@
+
+$(BINTEST)/test_%: $(SRC)/%.c
+
+$(BUILD) $(BIN) $(BINTEST):
 	mkdir -p $@
 
 clean:
-	$(RM) -r $(BUILD) $(BIN)
+	$(RM) -r $(BUILD) $(BIN) $(BINTEST)
+
+distclean: clean
+	$(RM) $(TARFILE)
+
+tar: clean
+	tar -C $(ROOT)/.. -czvf $(TARFILE) $(notdir $(realpath $(ROOT)))

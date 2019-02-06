@@ -7,6 +7,10 @@
 #include <readline/readline.h>
 #include "game.h"
 
+#ifndef COLOR
+#define COLOR 0
+#endif
+
 int terminal_main(CountriesMap* map);
 
 #endif /* TERMINAL_MODE_H */

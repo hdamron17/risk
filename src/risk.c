@@ -7,7 +7,7 @@
 
 int main() {
   bool graphical = false;
-  CountriesMap* map = load_map("assets/traditional");
+  CountriesMap* map = load_map("assets/simple");
   if (graphical)
     graphical_main(map);
   else

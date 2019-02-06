@@ -10,7 +10,7 @@ Country* mkCountryn(const char* name, const size_t name_len) {
   Country* c = malloc(sizeof(Country));
   c->name = malloc(name_len+1);
   strncpy(c->name, name, name_len);
-  c->troops = 0;
+  c->troops = 1;
   return c;
 }
 

@@ -4,6 +4,9 @@
 #define UTIL_H
 
 #include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+#include <math.h>
 
 #ifndef DEBUG
 #define DEBUG 0
@@ -15,5 +18,10 @@
 #define debug(...) message(if (DEBUG),stdout,DBG,__VA_ARGS__)
 #define warn(...) message(,stderr,WARN,__VA_ARGS__)
 #define err(...) message(,stderr,ERROR,__VA_ARGS__)
+
+#define UNUSED __attribute__((unused))
+
+size_t token_count(const char* s, const char c);
+size_t int_length(const size_t num);
 
 #endif /* UTIL_H */
