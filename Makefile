@@ -5,7 +5,11 @@ BUILD=build
 BIN=bin
 TEST=$(ROOT)/test
 BINTEST=$(BIN)/test
-TARFILE=risk.tar.gz
+DIST=dist
+GENDIRS=$(BUILD) $(BIN) $(BINTEST) $(DIST)
+
+VERSION:=$(firstword $(shell cat $(ROOT)/VERSION.txt))
+TARFILE=$(DIST)/risk-$(VERSION).tar.gz
 
 DEBUGFLAGS=-DDEBUG -g
 CFLAGS+= -I$(INCLUDE) -pedantic -Wall -Wextra -DCOLOR $(DEBUGFLAGS)
@@ -16,8 +20,11 @@ BUILDFILES:=$(patsubst $(SRC)/%.c,$(BUILD)/%.o,$(SOURCES))
 TESTS:=$(wildcard $(TEST)/test_*.c)
 BINTESTS:=$(patsubst $(TEST)/test_%.c,$(BINTEST)/test_%,$(TESTS))
 
-.PHONY: all test clean distclean tar
+.PHONY: all test clean distclean tar version
 all: $(BIN)/risk
+
+version:
+	@echo $(VERSION)
 
 $(BIN)/risk: $(BUILDFILES) | $(BIN)
 	$(CC) $(LFLAGS) $^ -o $@
@@ -35,14 +42,14 @@ $(BINTEST)/test_%: $(TEST)/test_%.c | $(BINTEST)
 
 $(BINTEST)/test_%: $(SRC)/%.c
 
-$(BUILD) $(BIN) $(BINTEST):
+$(GENDIRS):
 	mkdir -p $@
 
 clean:
 	$(RM) -r $(BUILD) $(BIN) $(BINTEST)
 
 distclean: clean
-	$(RM) $(TARFILE)
+	$(RM) -r $(DIST)
 
-tar: clean
-	tar -C $(ROOT)/.. -czvf $(TARFILE) $(notdir $(realpath $(ROOT)))
+tar: | $(DIST)
+	tar -C $(ROOT)/.. $(foreach d,$(GENDIRS), --exclude=$(d)) -czvf $(TARFILE) $(notdir $(realpath $(ROOT)))
