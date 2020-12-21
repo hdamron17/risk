@@ -16,12 +16,21 @@ CFLAGS+= -I$(INCLUDE) -pedantic -Wall -Wextra -DCOLOR $(DEBUGFLAGS)
 LFLAGS+= -lcurses -lreadline
 
 SOURCES:=$(wildcard $(SRC)/*.c)
+MAINS:=risk
+BINS:=$(addprefix $(BIN)/,$(MAINS))
 BUILDFILES:=$(patsubst $(SRC)/%.c,$(BUILD)/%.o,$(SOURCES))
 TESTS:=$(wildcard $(TEST)/test_*.c)
 BINTESTS:=$(patsubst $(TEST)/test_%.c,$(BINTEST)/test_%,$(TESTS))
 
-.PHONY: all test clean distclean tar version
-all: $(BIN)/risk
+ifeq ($(PREFIX),)
+	PREFIX := /usr/local
+endif
+IDEST:=$(DESTDIR)$(PREFIX)
+IBIN:=$(IDEST)/bin
+IBINS:=$(addprefix $(IBIN)/,$(MAINS))
+
+.PHONY: all test clean distclean tar version install uninstall
+all: $(BINS)
 
 version:
 	@echo $(VERSION)
@@ -44,6 +53,13 @@ $(BINTEST)/test_%: $(SRC)/%.c
 
 $(GENDIRS):
 	mkdir -p $@
+
+install: all
+	install -d $(IBIN)
+	install -m 755 $(BINS) $(IBIN)
+
+uninstall:
+	$(RM) $(IBINS)
 
 clean:
 	$(RM) -r $(BUILD) $(BIN) $(BINTEST)

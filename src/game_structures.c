@@ -41,10 +41,10 @@ void rmCountriesMap(CountriesMap* map) {
   free(map);
 }
 
-bool* conn(CountriesMap* map, size_t i, size_t j) {
+bool* conn(const CountriesMap* map, size_t i, size_t j) {
   return &map->connections[i * map->ncountries + j];
 }
 
-bool get_conn(CountriesMap* map, size_t i, size_t j) {
+bool get_conn(const CountriesMap* map, size_t i, size_t j) {
   return *conn(map, i, j);
 }

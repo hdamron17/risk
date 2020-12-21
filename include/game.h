@@ -12,8 +12,6 @@
 
 #define BASE_COLOR 31
 
-enum game_mode {PLACEMENT, ATTACK, MOVEMENT, CARDS};
-
 void randomize_ownership(CountriesMap* map, size_t nplayers);
 unsigned int continent_bonus(const CountriesMap* map, const size_t player);  // TODO
 unsigned int num_troops(const CountriesMap* map, const size_t player);
@@ -22,5 +20,6 @@ void print_terretory(const CountriesMap* map, const size_t i);
 void list_terretories(const CountriesMap* map);
 void list_connections(const CountriesMap* map, const size_t i);
 size_t lookup_country(const CountriesMap* map, const char* name);
+bool place_troops(CountriesMap* map, TurnData* turn_data, const size_t i, const unsigned int num);
 
 #endif /* GAME_H */

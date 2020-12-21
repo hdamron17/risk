@@ -30,6 +30,7 @@ unsigned int num_troops(const CountriesMap* map, const size_t player) {
   unsigned int n = 0;
   for (size_t i = 0; i < map->ncountries; ++i) {
     if (map->ownership[i] == player) {
+      debug("Player %lu owns %s\n", player, map->countries[i]->name);
       ++n;
     }
   }
@@ -37,12 +38,13 @@ unsigned int num_troops(const CountriesMap* map, const size_t player) {
 }
 
 unsigned int continent_bonus(const CountriesMap* map, const size_t player) {
-  warn("Function undefined");
+  warn("Function undefined\n");
   return 0;  // TODO add continent bonus
 }
 
 unsigned int start_troops(const CountriesMap* map, const size_t player) {
-  unsigned int base = num_troops(map, player) / 3;
+  unsigned int n = num_troops(map, player);
+  unsigned int base = max(3, n / 3);
   return base + continent_bonus(map, player);
 }
 
@@ -105,4 +107,19 @@ size_t lookup_country(const CountriesMap* map, const char* name) {
     }
   }
   return i;
+}
+
+bool place_troops(CountriesMap* map, TurnData* turn_data, const size_t i, const unsigned int num) {
+  Country* country = map->countries[i];
+  if (map->ownership[i] != turn_data->player) {
+    err("%s does not belong to you\n", country->name);
+    return false;
+  }
+  if (turn_data->unplaced_troops < num) {
+    err("Cannot place %u troops, only %u available\n", num, turn_data->unplaced_troops);
+    return false;
+  }
+  turn_data->unplaced_troops -= num;
+  map->countries[i]->troops += num;
+  return true;
 }

@@ -26,7 +26,15 @@ typedef struct {
 
 CountriesMap* emptyCountiesMap(const size_t n);
 void rmCountriesMap(CountriesMap* map);
-bool* conn(CountriesMap* map, size_t i, size_t j);
-bool get_conn(CountriesMap* map, size_t i, size_t j);
+bool* conn(const CountriesMap* map, size_t i, size_t j);
+bool get_conn(const CountriesMap* map, size_t i, size_t j);
+
+typedef enum {PLACEMENT, ATTACK, MOVEMENT, CARDS} GameMode;
+
+typedef struct {
+  size_t player;
+  GameMode mode;
+  unsigned int unplaced_troops;
+} TurnData;
 
 #endif /* GAME_STRUCTURES_H */
